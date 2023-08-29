@@ -1,6 +1,6 @@
 package com.springle.security.util;
 
-import com.springle.User.Role;
+import com.springle.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

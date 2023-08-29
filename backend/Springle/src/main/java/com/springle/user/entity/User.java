@@ -1,4 +1,4 @@
-package com.springle.User;
+package com.springle.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
