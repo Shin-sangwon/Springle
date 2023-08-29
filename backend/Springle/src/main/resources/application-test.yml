@@ -22,3 +22,7 @@ spring:
     redis:
       time-to-live: 3600
       cache-null-values: false
+
+jwt:
+  token:
+    secret: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
