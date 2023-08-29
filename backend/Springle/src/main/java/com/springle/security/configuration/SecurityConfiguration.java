@@ -1,5 +1,7 @@
 package com.springle.security.configuration;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -11,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
 
     @Bean
@@ -23,13 +25,13 @@ public class SecurityConfiguration {
                            .headers(headers -> headers.frameOptions(
                                HeadersConfigurer.FrameOptionsConfig::disable))
                            .authorizeHttpRequests(
-                               authorize -> authorize.requestMatchers("/api/v1/account/login")
+                               authorize -> authorize.requestMatchers(antMatcher("/api/v1/account/login"))
                                                      .permitAll()
                                                      .anyRequest()
                                                      .authenticated())
                            .sessionManagement(session -> session.sessionCreationPolicy(
                                SessionCreationPolicy.STATELESS))
-                           .build();
+                           .getOrBuild();
 
     }
 }
