@@ -2,6 +2,8 @@ package com.springle.security.configuration;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import com.springle.security.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -11,10 +13,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -25,12 +31,15 @@ public class SecurityConfiguration {
                            .headers(headers -> headers.frameOptions(
                                HeadersConfigurer.FrameOptionsConfig::disable))
                            .authorizeHttpRequests(
-                               authorize -> authorize.requestMatchers(antMatcher("/api/v1/account/login"))
+                               authorize -> authorize.requestMatchers(
+                                                         antMatcher("/api/v1/account/login"))
                                                      .permitAll()
                                                      .anyRequest()
                                                      .authenticated())
                            .sessionManagement(session -> session.sessionCreationPolicy(
                                SessionCreationPolicy.STATELESS))
+                           .addFilterBefore(jwtAuthenticationFilter,
+                               UsernamePasswordAuthenticationFilter.class)
                            .getOrBuild();
 
     }
