@@ -5,6 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.springle.security.util.JwtProvider;
 import com.springle.user.entity.Role;
 import com.springle.user.entity.User;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +23,8 @@ public class SecurityTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-    @Value("${jwt.token.secret}") private String secretKey;
+    @Value("${jwt.token.secret}")
+    private String secretKey;
 
     @DisplayName("JWT 생성된다")
     @Test
@@ -58,6 +64,20 @@ public class SecurityTest {
             assertThat(u.getId()).isEqualTo(id);
             assertThat(u.getLoginId()).isEqualTo(loginId);
         });
+    }
+
+    @DisplayName("만료된 JWT 판별된다")
+    @Test
+    void expiredTokenDetected() throws Exception {
+
+        final String expiredToken = Jwts.builder()
+                                        .signWith(Keys.hmacShaKeyFor(
+                                                secretKey.getBytes(StandardCharsets.UTF_8)),
+                                            SignatureAlgorithm.HS256)
+                                        .setExpiration(new Date(new Date().getTime() - 1))
+                                        .compact();
+
+        assertThat(jwtProvider.isExpired(expiredToken, secretKey)).isEqualTo(true);
     }
 
 }

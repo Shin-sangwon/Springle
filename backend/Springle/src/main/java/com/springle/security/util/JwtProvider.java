@@ -2,11 +2,13 @@ package com.springle.security.util;
 
 import com.springle.user.entity.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +38,21 @@ public class JwtProvider {
     }
 
     public boolean isExpired(String token, String secretKey) {
-        return Jwts.parserBuilder()
-                   .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody()
-                   .getExpiration()
-                   .before(new Date());
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+                .require("exp", new Predicate<Date>() {
+                    @Override
+                    public boolean test(Date expirationDate) {
+                        return expirationDate.before(new Date());
+                    }
+                })
+                .build()
+                .parseClaimsJws(token);
+            return false;
+        } catch (JwtException e) {
+            return true;
+        }
     }
 
     public String createToken(Long id, String loginId, Role role, String secretKey) {
