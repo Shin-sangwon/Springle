@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            String loginId = JwtProvider.getLoginId(token, secretKey);
+            String loginId = jwtProvider.getLoginId(token, secretKey);
             UserDetails user = userDetailService.loadUserByUsername(loginId);
 
             // 권한 부여하기

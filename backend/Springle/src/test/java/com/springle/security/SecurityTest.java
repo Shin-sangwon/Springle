@@ -20,7 +20,7 @@ public class SecurityTest {
     private JwtProvider jwtProvider;
     @Value("${jwt.token.secret}") private String secretKey;
 
-    @DisplayName("JWT_토큰_생성된다")
+    @DisplayName("JWT 생성된다")
     @Test
     void JWT_token_generated() throws Exception {
 
@@ -36,6 +36,27 @@ public class SecurityTest {
             assertThat(t).isNotNull();
             assertThat(t).isNotBlank();
             assertThat(t).isNotEmpty();
+        });
+    }
+
+    @DisplayName("JWT로 payload 조회된다")
+    @Test
+    void getPayloadByJWT() throws Exception {
+
+        User user = User.builder()
+                        .loginId("loginId")
+                        .loginPassword("1234")
+                        .role(Role.USER)
+                        .build();
+
+        String token = jwtProvider.createToken(user.getId(), user.getLoginId(), user.getRole(), secretKey);
+
+        long id = jwtProvider.getId(token, secretKey);
+        String loginId = jwtProvider.getLoginId(token, secretKey);
+
+        assertThat(user).satisfies(u -> {
+            assertThat(u.getId()).isEqualTo(id);
+            assertThat(u.getLoginId()).isEqualTo(loginId);
         });
     }
 

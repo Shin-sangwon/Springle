@@ -17,16 +17,16 @@ public class JwtProvider {
     private final long accessTokenExpireTimeMs = 3600000L; // 1시간
     private final long refreshTokenExpireTimeMs = 1209600000L; // 2주일
 
-    public static long getId(String token, String secretKey) {
+    public Long getId(String token, String secretKey) {
         return Jwts.parserBuilder()
                    .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                    .build()
                    .parseClaimsJws(token)
                    .getBody()
-                   .get("id", long.class);
+                   .get("id", Long.class);
     }
 
-    public static String getLoginId(String token, String secretKey) {
+    public String getLoginId(String token, String secretKey) {
         return Jwts.parserBuilder()
                    .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                    .build()
