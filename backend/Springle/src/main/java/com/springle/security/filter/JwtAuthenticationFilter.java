@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Pattern;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,13 +29,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailServiceImpl userDetailService;
     private final JwtProvider jwtProvider;
-    @Value("${jwt.token.secret}") private String secretKey;
+    @Value("${jwt.token.secret}")
+    private String secretKey;
+
+    private static final Pattern PUBLIC_ENDPOINTS = Pattern.compile("/api/v1/account/(login|find/.*)|/h2-console");
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String requestURI = request.getRequestURI();
+
         log.debug("authorization : '{}'", authorization);
+
+        if (isPublicEndpoint(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 유효성 검사
         if (isEmptyOrInvalidAuthorization(authorization)) {
@@ -86,6 +98,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error("Failed to refresh access token", e);
         }
+    }
+
+    private boolean isPublicEndpoint(String requestURI) {
+        return PUBLIC_ENDPOINTS.matcher(requestURI).matches();
     }
 
 }
