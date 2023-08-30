@@ -101,5 +101,44 @@ public class JwtProvider {
 
     }
 
+    public String refreshAccessToken(String refreshToken, String secretKey) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+                                .build()
+                                .parseClaimsJws(refreshToken)
+                                .getBody();
+
+            String loginId = claims.get("loginId", String.class);
+            // Redis 또는 데이터베이스에서 저장된 refreshToken과 전달된 refreshToken이 일치하는지 확인
+            String storedRefreshToken = redisTemplate.opsForValue()
+                                                     .get(loginId);
+
+            if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+                throw new RuntimeException();
+            }
+
+            // 저장된 refreshToken이 유효하면, 새로운 Access Token을 발급
+            Date now = new Date();
+            Date accessTokenExpiration = new Date(now.getTime() + accessTokenExpireTimeMs);
+
+            Claims newClaims = Jwts.claims();
+            newClaims.put("loginId", loginId);
+
+            return Jwts.builder()
+                       .setClaims(newClaims)
+                       .setIssuedAt(now)
+                       .setExpiration(accessTokenExpiration)
+                       .signWith(Keys.hmacShaKeyFor(
+                               secretKey.getBytes(StandardCharsets.UTF_8)),
+                           SignatureAlgorithm.HS256)
+                       .compact();
+
+        } catch (Exception e) {
+            // Refresh Token 검증 실패
+            throw new RuntimeException();
+        }
+    }
+
 
 }

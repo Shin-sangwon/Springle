@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,10 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorization.substring(7);
 
         if (authorization.startsWith("Bearer ")) {
-            // Access Token 처리, 권한 부여하기
             handleAccessToken(token, request, response, filterChain);
         } else if (authorization.startsWith("Refresh ")) {
-            // Refresh Token 처리
             handleRefreshToken(token, response);
         }
 
@@ -60,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return authorization == null || !(authorization.startsWith("Bearer ") || authorization.startsWith("Refresh "));
     }
 
+    // Access Token 처리, 권한 부여하기
     private void handleAccessToken(String token, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (jwtProvider.isExpired(token, secretKey)) {
             log.error("access token is expired");
