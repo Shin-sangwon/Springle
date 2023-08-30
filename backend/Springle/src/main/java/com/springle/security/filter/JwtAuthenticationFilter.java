@@ -7,12 +7,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -44,37 +46,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorization.substring(7);
 
         if (authorization.startsWith("Bearer ")) {
-            // Access Token 처리
-            if (jwtProvider.isExpired(token, secretKey)) {
-                log.error("access token is expired");
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            String loginId = jwtProvider.getLoginId(token, secretKey);
-            UserDetails user = userDetailService.loadUserByUsername(loginId);
-
-            // 권한 부여하기
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginId, null, user.getAuthorities());
-
-            // Detail
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext()
-                                 .setAuthentication(authenticationToken);
-
-
+            // Access Token 처리, 권한 부여하기
+            handleAccessToken(token, request, response, filterChain);
         } else if (authorization.startsWith("Refresh ")) {
             // Refresh Token 처리
-            String refreshToken = authorization.substring(8); // "Refresh " prefix 제거
-            try {
-                String newAccessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
-                response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-            } catch (Exception e) {
-                // Refresh Token 검증 실패 또는 새로운 Access Token 발급 실패
-                log.error("Failed to refresh access token", e);
-            }
-
+            handleRefreshToken(token, response);
         }
 
         filterChain.doFilter(request, response);
@@ -82,6 +58,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isEmptyOrInvalidAuthorization(String authorization) {
         return authorization == null || !(authorization.startsWith("Bearer ") || authorization.startsWith("Refresh "));
+    }
+
+    private void handleAccessToken(String token, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (jwtProvider.isExpired(token, secretKey)) {
+            log.error("access token is expired");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String loginId = jwtProvider.getLoginId(token, secretKey);
+        UserDetails user = userDetailService.loadUserByUsername(loginId);
+
+        authorizeUser(loginId, user.getAuthorities(), request);
+    }
+
+    private void authorizeUser(String loginId, Collection<? extends GrantedAuthority> authorities, HttpServletRequest request) {
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, null, authorities);
+
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    }
+
+    private void handleRefreshToken(String token, HttpServletResponse response) {
+        try {
+            String newAccessToken = jwtProvider.refreshAccessToken(token.substring(8), secretKey);
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
+        } catch (Exception e) {
+            log.error("Failed to refresh access token", e);
+        }
     }
 
 }
