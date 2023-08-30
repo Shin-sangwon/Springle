@@ -80,4 +80,22 @@ public class SecurityTest {
         assertThat(jwtProvider.isExpired(expiredToken, secretKey)).isEqualTo(true);
     }
 
+    @DisplayName("REFRESH TOKEN 생성된다")
+    @Test
+    void refreshTokenGenerated() throws Exception {
+
+        User user = User.builder()
+                        .loginId("loginId")
+                        .loginPassword("1234")
+                        .role(Role.USER)
+                        .build();
+
+        String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
+
+        assertThat(refreshToken).satisfies(t -> {
+            assertThat(t).isNotNull();
+            assertThat(t).isNotBlank();
+        });
+    }
+
 }
