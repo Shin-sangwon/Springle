@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,13 +34,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.debug("authorization : '{}'", authorization);
 
-        if (authorization == null || !(authorization.startsWith("Bearer ") || authorization.startsWith("Refresh "))) {
-            log.error("authentication is null");
+        // 유효성 검사
+        if (isEmptyOrInvalidAuthorization(authorization)) {
+            log.error("authentication is null or invalid");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authorization.substring(7); // "Bearer " 또는 "Refresh " 이후의 토큰 부분만 추출
+        String token = authorization.substring(7);
+
         if (authorization.startsWith("Bearer ")) {
             // Access Token 처리
             if (jwtProvider.isExpired(token, secretKey)) {
@@ -61,21 +64,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                  .setAuthentication(authenticationToken);
 
 
-//        } else if (authorization.startsWith("Refresh ")) {
-//            // Refresh Token 처리
-//            String refreshToken = authorization.substring(8); // "Refresh " prefix 제거
-//            try {
-//                String newAccessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
-//                response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
-//            } catch (Exception e) {
-//                // Refresh Token 검증 실패 또는 새로운 Access Token 발급 실패
-//                log.error("Failed to refresh access token", e);
-//            }
+        } else if (authorization.startsWith("Refresh ")) {
+            // Refresh Token 처리
+            String refreshToken = authorization.substring(8); // "Refresh " prefix 제거
+            try {
+                String newAccessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
+                response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
+            } catch (Exception e) {
+                // Refresh Token 검증 실패 또는 새로운 Access Token 발급 실패
+                log.error("Failed to refresh access token", e);
+            }
 
-//        }
+        }
 
         filterChain.doFilter(request, response);
     }
 
-}
+    private boolean isEmptyOrInvalidAuthorization(String authorization) {
+        return authorization == null || !(authorization.startsWith("Bearer ") || authorization.startsWith("Refresh "));
+    }
+
 }
