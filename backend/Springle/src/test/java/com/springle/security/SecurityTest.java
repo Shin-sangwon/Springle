@@ -92,8 +92,6 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void refreshTokenGenerated() throws Exception {
 
-        User user = createUser();
-
         String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
 
         assertThat(refreshToken).satisfies(t -> {
@@ -107,10 +105,9 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void refreshTokenIsStoredInRedis() throws Exception {
 
-        User user = createUser();
 
-        String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
-
+        jwtProvider.createRefreshToken("loginId", secretKey);
+        System.out.println(redisTemplate.opsForValue().get("loginId"));
         boolean tokenExists = Boolean.TRUE.equals(redisTemplate.hasKey("loginId"));
 
         assertThat(tokenExists).isTrue();
@@ -122,10 +119,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void tokenIsRefreshed() throws Exception {
 
-        User user = createUser();
-
         String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
-
         String accessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
 
         assertThat(accessToken).isNotNull();
