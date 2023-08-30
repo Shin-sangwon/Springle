@@ -125,4 +125,22 @@ public class SecurityTest extends AbstractContainerTest {
 
     }
 
+    @Transactional
+    @DisplayName("Token Refersh된다")
+    @Test
+    void tokenIsRefreshed() throws Exception {
+
+        User user = User.builder()
+                        .loginId("loginId")
+                        .loginPassword("1234")
+                        .role(Role.USER)
+                        .build();
+
+        String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
+
+        String accessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
+
+        assertThat(accessToken).isNotNull();
+    }
+
 }
