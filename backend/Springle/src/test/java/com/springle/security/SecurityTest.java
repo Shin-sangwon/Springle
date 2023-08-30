@@ -33,15 +33,19 @@ public class SecurityTest extends AbstractContainerTest {
     @Value("${jwt.token.secret}")
     private String secretKey;
 
+    private User createUser() {
+        return User.builder()
+                   .loginId("loginId")
+                   .loginPassword("1234")
+                   .role(Role.USER)
+                   .build();
+    }
+
     @DisplayName("JWT 생성된다")
     @Test
     void JWT_token_generated() throws Exception {
 
-        User user = User.builder()
-                        .loginId("loginId")
-                        .loginPassword("1234")
-                        .role(Role.USER)
-                        .build();
+        User user = createUser();
 
         String token = jwtProvider.createToken(user.getId(), user.getLoginId(), user.getRole(), secretKey);
 
@@ -56,11 +60,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void getPayloadByJWT() throws Exception {
 
-        User user = User.builder()
-                        .loginId("loginId")
-                        .loginPassword("1234")
-                        .role(Role.USER)
-                        .build();
+        User user = createUser();
 
         String token = jwtProvider.createToken(user.getId(), user.getLoginId(), user.getRole(), secretKey);
 
@@ -92,11 +92,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void refreshTokenGenerated() throws Exception {
 
-        User user = User.builder()
-                        .loginId("loginId")
-                        .loginPassword("1234")
-                        .role(Role.USER)
-                        .build();
+        User user = createUser();
 
         String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
 
@@ -111,11 +107,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void refreshTokenIsStoredInRedis() throws Exception {
 
-        User user = User.builder()
-                        .loginId("loginId")
-                        .loginPassword("1234")
-                        .role(Role.USER)
-                        .build();
+        User user = createUser();
 
         String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
 
@@ -130,11 +122,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void tokenIsRefreshed() throws Exception {
 
-        User user = User.builder()
-                        .loginId("loginId")
-                        .loginPassword("1234")
-                        .role(Role.USER)
-                        .build();
+        User user = createUser();
 
         String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
 
