@@ -1,3 +1,7 @@
+<script>
+    import "../app.css";
+</script>
+
 <nav>
     <a href="/">홈페이지</a>
     <a href="/about">소개</a>
