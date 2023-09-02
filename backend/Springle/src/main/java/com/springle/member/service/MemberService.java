@@ -33,4 +33,5 @@ public class MemberService {
                                .orElseThrow(() -> new MemberException(
                                    ErrorCode.MEMBER_NOT_FOUND));
     }
+
 }

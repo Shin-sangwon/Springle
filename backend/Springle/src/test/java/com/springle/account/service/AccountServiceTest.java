@@ -1,9 +1,11 @@
 package com.springle.account.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.member.entity.Member;
+import com.springle.member.exception.MemberException;
 import com.springle.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +55,18 @@ class AccountServiceTest extends ServiceTest {
             assertThat(m.getLoginPassword()).isNotEqualTo("loginPassword");
             assertThat(m.getEmail()).isNotEqualTo("email@email.com");
         });
+    }
+
+    @DisplayName("중복된 아이디 회원가입 실패한다")
+    @Test
+    void duplicatedInformationFailedJoin() throws Exception {
+        //given
+        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "email@email.com");
+
+        //when
+        long id = accountService.join(request);
+
+        assertThrows(MemberException.class, () -> accountService.join(request));
     }
 
 }
