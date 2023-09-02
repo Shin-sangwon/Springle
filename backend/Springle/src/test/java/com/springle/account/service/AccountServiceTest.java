@@ -38,6 +38,7 @@ class AccountServiceTest extends ServiceTest {
 
     }
 
+    @Transactional
     @DisplayName("회원 정보 암호화 된다")
     @Test
     void memberInfoIsEncrypted() throws Exception {
