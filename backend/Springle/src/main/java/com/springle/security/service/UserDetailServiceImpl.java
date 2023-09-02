@@ -1,6 +1,6 @@
 package com.springle.security.service;
 
-import com.springle.user.repository.UserRepository;
+import com.springle.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        return userRepository.findByLoginId(loginId)
-                             .orElseThrow(EntityNotFoundException::new);
+        return memberRepository.findByLoginId(loginId)
+                               .orElseThrow(EntityNotFoundException::new);
     }
 }

@@ -1,4 +1,4 @@
-package com.springle.user.entity;
+package com.springle.member.entity;
 
 public enum Role {
     ADMIN, USER, GUEST

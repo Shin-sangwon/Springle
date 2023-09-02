@@ -1,6 +1,6 @@
 package com.springle.security.util;
 
-import com.springle.user.entity.Role;
+import com.springle.member.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

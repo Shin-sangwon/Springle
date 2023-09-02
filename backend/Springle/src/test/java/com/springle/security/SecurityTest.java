@@ -3,8 +3,8 @@ package com.springle.security;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.springle.security.util.JwtProvider;
-import com.springle.user.entity.Role;
-import com.springle.user.entity.User;
+import com.springle.member.entity.Role;
+import com.springle.member.entity.Member;
 import com.springle.util.AbstractContainerTest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,21 +33,21 @@ public class SecurityTest extends AbstractContainerTest {
     @Value("${jwt.token.secret}")
     private String secretKey;
 
-    private User createUser() {
-        return User.builder()
-                   .loginId("loginId")
-                   .loginPassword("1234")
-                   .role(Role.USER)
-                   .build();
+    private Member createUser() {
+        return Member.builder()
+                     .loginId("loginId")
+                     .loginPassword("1234")
+                     .role(Role.USER)
+                     .build();
     }
 
     @DisplayName("JWT 생성된다")
     @Test
     void JWT_token_generated() throws Exception {
 
-        User user = createUser();
+        Member member = createUser();
 
-        String token = jwtProvider.createToken(user.getId(), user.getLoginId(), user.getRole(), secretKey);
+        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole(), secretKey);
 
         assertThat(token).satisfies(t -> {
             assertThat(t).isNotNull();
@@ -60,14 +60,14 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void getPayloadByJWT() throws Exception {
 
-        User user = createUser();
+        Member member = createUser();
 
-        String token = jwtProvider.createToken(user.getId(), user.getLoginId(), user.getRole(), secretKey);
+        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole(), secretKey);
 
         long id = jwtProvider.getId(token, secretKey);
         String loginId = jwtProvider.getLoginId(token, secretKey);
 
-        assertThat(user).satisfies(u -> {
+        assertThat(member).satisfies(u -> {
             assertThat(u.getId()).isEqualTo(id);
             assertThat(u.getLoginId()).isEqualTo(loginId);
         });
