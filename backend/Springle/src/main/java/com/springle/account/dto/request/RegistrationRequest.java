@@ -10,12 +10,12 @@ public record RegistrationRequest(
     String email
 ) {
 
-    public Member toEntity() {
+    public Member toEntity(String encodePassword, String encodeEmail) {
         return Member.builder()
                      .loginId(this.loginId)
-                     .loginPassword(this.loginPassword)
+                     .loginPassword(encodePassword)
                      .name(this.name)
-                     .email(this.email)
+                     .email(encodeEmail)
                      .role(Role.USER)
                      .build();
     }
