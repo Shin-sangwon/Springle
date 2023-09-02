@@ -1,11 +1,9 @@
 package com.springle.account.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
+import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.member.entity.Member;
-import com.springle.member.entity.Role;
-import com.springle.member.repository.MemberRepository;
 import com.springle.member.service.MemberService;
 import com.springle.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +23,7 @@ class AccountServiceTest extends ServiceTest {
     void userRegistrationSuccess() throws Exception {
 
         //given
-        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "이메일", Role.GUEST);
+        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "이메일");
 
         //when
         long id = accountService.join(request);
