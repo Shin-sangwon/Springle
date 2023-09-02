@@ -4,20 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.member.entity.Member;
-import com.springle.member.service.MemberService;
 import com.springle.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 class AccountServiceTest extends ServiceTest {
 
     @Autowired
     private AccountService accountService;
 
-    @Autowired
-    private MemberService memberService;
-
+    @Transactional
     @DisplayName("회원 회원가입 성공한다")
     @Test
     void userRegistrationSuccess() throws Exception {
