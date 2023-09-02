@@ -1,4 +1,4 @@
-package com.springle.account;
+package com.springle.account.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
