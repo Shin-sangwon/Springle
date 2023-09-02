@@ -20,8 +20,8 @@ public class MemberService {
     @Transactional
     public long save(RegistrationRequest request) {
 
-        Member member = request.toEntity(passwordEncoder.encode(request.loginPassword()),
-            passwordEncoder.encode(request.email()));
+        validateDuplicateLoginIdAndEmail(request);
+        Member member = request.toEntity(passwordEncoder.encode(request.loginPassword()), passwordEncoder.encode(request.email()));
 
         return memberRepository.save(member)
                                .getId();
@@ -32,6 +32,27 @@ public class MemberService {
         return memberRepository.findById(id)
                                .orElseThrow(() -> new MemberException(
                                    ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private void validateDuplicateLoginIdAndEmail(RegistrationRequest request) {
+        checkDuplicateLoginId(request.loginId());
+        checkDuplicateEmail(request.email());
+    }
+
+    private void checkDuplicateLoginId(String loginId) {
+        boolean loginIdExists = memberRepository.existsByLoginId(loginId);
+
+        if(loginIdExists) {
+            throw new MemberException(ErrorCode.DUPLICATED_LOGIN_ID);
+        }
+    }
+
+    private void checkDuplicateEmail(String email) {
+        boolean emailExists = memberRepository.existsByEmail(email);
+
+        if(emailExists) {
+            throw new MemberException(ErrorCode.DUPLICATED_EMAIL);
+        }
     }
 
 }
