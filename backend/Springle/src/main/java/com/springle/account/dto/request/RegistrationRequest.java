@@ -9,15 +9,15 @@ public record RegistrationRequest(
     @NotBlank String loginId,
     @NotBlank String loginPassword,
     @NotBlank String name,
-    @Email String email
+    @Email @NotBlank String email
 ) {
 
-    public Member toEntity(String encodePassword, String encodeEmail) {
+    public Member toEntity(String encodePassword) {
         return Member.builder()
                      .loginId(this.loginId)
                      .loginPassword(encodePassword)
                      .name(this.name)
-                     .email(encodeEmail)
+                     .email(this.email)
                      .role(Role.USER)
                      .build();
     }

@@ -53,7 +53,7 @@ class AccountServiceTest extends ServiceTest {
 
         assertThat(member).satisfies(m -> {
             assertThat(m.getLoginPassword()).isNotEqualTo("loginPassword");
-            assertThat(m.getEmail()).isNotEqualTo("email@email.com");
+            assertThat(m.getEmail()).isEqualTo("email@email.com");
         });
     }
 

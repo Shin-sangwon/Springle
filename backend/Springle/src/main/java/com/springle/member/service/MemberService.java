@@ -23,7 +23,7 @@ public class MemberService {
     public long save(RegistrationRequest request) {
 
         validateDuplicateLoginIdAndEmail(request);
-        Member member = request.toEntity(passwordEncoder.encode(request.loginPassword()), passwordEncoder.encode(request.email()));
+        Member member = request.toEntity(passwordEncoder.encode(request.loginPassword()));
 
         return memberRepository.save(member)
                                .getId();
