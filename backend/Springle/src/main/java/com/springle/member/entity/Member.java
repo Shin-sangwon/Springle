@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +17,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Builder
-@Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity(name = "user")
 public class Member implements UserDetails {
 
@@ -35,8 +32,24 @@ public class Member implements UserDetails {
     private String loginPassword;
 
     @Column
+    private String name;
+
+    @Column
+    private String email;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Builder
+    public Member(long id, String loginId, String loginPassword, String name, String email, Role role) {
+        this.id = id;
+        this.loginId = loginId;
+        this.loginPassword = loginPassword;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
