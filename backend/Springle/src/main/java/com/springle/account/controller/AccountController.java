@@ -1,16 +1,27 @@
 package com.springle.account.controller;
 
+import com.springle.account.dto.request.RegistrationRequest;
+import com.springle.account.service.AccountService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
 @RestController
 public class AccountController {
 
-    @GetMapping("/login")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok().body("security");
+    private final AccountService accountService;
+    @PostMapping("/join")
+    public ResponseEntity<Void> join(RegistrationRequest request) {
+
+        log.debug("AccountService - join");
+        accountService.join(request);
+
+        return ResponseEntity.noContent().build();
     }
 }
