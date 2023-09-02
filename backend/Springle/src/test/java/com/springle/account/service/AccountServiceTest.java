@@ -21,7 +21,7 @@ class AccountServiceTest extends ServiceTest {
     void userRegistrationSuccess() throws Exception {
 
         //given
-        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "이메일");
+        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "email@email.com");
 
         //when
         long id = accountService.join(request);
@@ -34,6 +34,25 @@ class AccountServiceTest extends ServiceTest {
             assertThat(m.getLoginId()).isEqualTo("loginId");
         });
 
+    }
+
+    @DisplayName("회원 정보 암호화 된다")
+    @Test
+    void memberInfoIsEncrypted() throws Exception {
+
+        //given
+        RegistrationRequest request = new RegistrationRequest("loginId", "loginPassword", "이름", "email@email.com");
+
+        //when
+        long id = accountService.join(request);
+
+        //then
+        Member member = memberService.findById(id);
+
+        assertThat(member).satisfies(m -> {
+            assertThat(m.getLoginPassword()).isNotEqualTo("loginPassword");
+            assertThat(m.getEmail()).isNotEqualTo("email@email.com");
+        });
     }
 
 }
