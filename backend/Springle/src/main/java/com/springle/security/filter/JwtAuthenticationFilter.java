@@ -1,6 +1,8 @@
 package com.springle.security.filter;
 
+import com.springle.member.entity.Member;
 import com.springle.security.service.UserDetailServiceImpl;
+import com.springle.security.util.CurrentUser;
 import com.springle.security.util.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -78,13 +80,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String loginId = jwtProvider.getLoginId(token, secretKey);
         UserDetails user = userDetailService.loadUserByUsername(loginId);
+        CurrentUser currentUser = new CurrentUser((Member) user);
 
-        authorizeUser(loginId, user.getAuthorities(), request);
+        authorizeUser(currentUser, user.getAuthorities(), request);
     }
 
-    private void authorizeUser(String loginId, Collection<? extends GrantedAuthority> authorities, HttpServletRequest request) {
+    private void authorizeUser(CurrentUser currentUser, Collection<? extends GrantedAuthority> authorities, HttpServletRequest request) {
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, null, authorities);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(currentUser, null, authorities);
 
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
