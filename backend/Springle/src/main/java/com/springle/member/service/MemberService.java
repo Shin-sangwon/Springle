@@ -4,6 +4,7 @@ import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.global.exception.ErrorCode;
 import com.springle.member.entity.Member;
 import com.springle.member.exception.MemberException;
+import com.springle.member.repository.MemberQueryRepository;
 import com.springle.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -40,7 +42,7 @@ public class MemberService {
     }
 
     private void checkDuplicateLoginId(String loginId) {
-        boolean loginIdExists = memberRepository.existsByLoginId(loginId);
+        boolean loginIdExists = memberQueryRepository.existsByLoginId(loginId);
 
         if(loginIdExists) {
             throw new MemberException(ErrorCode.DUPLICATED_LOGIN_ID);
@@ -48,7 +50,7 @@ public class MemberService {
     }
 
     private void checkDuplicateEmail(String email) {
-        boolean emailExists = memberRepository.existsByEmail(email);
+        boolean emailExists = memberQueryRepository.existsByEmail(email);
 
         if(emailExists) {
             throw new MemberException(ErrorCode.DUPLICATED_EMAIL);

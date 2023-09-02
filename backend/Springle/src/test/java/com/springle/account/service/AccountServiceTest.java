@@ -57,6 +57,7 @@ class AccountServiceTest extends ServiceTest {
         });
     }
 
+    @Transactional
     @DisplayName("중복된 아이디 회원가입 실패한다")
     @Test
     void duplicatedInformationFailedJoin() throws Exception {
