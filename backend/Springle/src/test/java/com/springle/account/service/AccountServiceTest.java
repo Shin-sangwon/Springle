@@ -94,7 +94,7 @@ class AccountServiceTest extends ServiceTest {
     }
 
     @Transactional
-    @DisplayName("없는 아이디로 로그인시 AccountException 반환한다")
+    @DisplayName("없는 아이디로 로그인시 MemberException 반환한다")
     @Test
     void throwAccountExceptionWhenLoginWithNonExistentId() throws Exception {
 
@@ -104,6 +104,21 @@ class AccountServiceTest extends ServiceTest {
         //when
         //then, findByLoginId로 entity를 찾지 못하는 것은 일반적으로도 사용되므로 MemberException을 던지는데, 로그인 용 메소드를 만들어서 AccountException을 던지게 해야 하나?
         assertThrows(MemberException.class, () -> accountService.login(loginRequest));
+    }
+
+    @Transactional
+    @DisplayName("잘못된 비밀번호 로그인 시 AccountException 반환한다")
+    @Test
+    void throwAccountExceptionWhenLoginWithWrongPassword() throws Exception {
+
+        //given
+        createMember();
+
+        //when
+        LoginRequest loginRequest = new LoginRequest("testId", "wrongPassword");
+
+        //then
+        assertThrows(AccountException.class, () -> accountService.login(loginRequest));
     }
 
 }
