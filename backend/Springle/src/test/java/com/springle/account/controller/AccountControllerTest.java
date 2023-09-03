@@ -1,15 +1,21 @@
 package com.springle.account.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.springle.account.dto.request.LoginRequest;
 import com.springle.account.dto.request.RegistrationRequest;
+import com.springle.account.dto.response.TokenResponse;
 import com.springle.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +25,7 @@ class AccountControllerTest extends ControllerTest {
 
     private final String baseUrl = "/api/v1/account";
 
-    @DisplayName("회원 가입한다")
+    @DisplayName("회원가입 api")
     @Test
     void memberJoinTest() throws Exception {
 
@@ -43,6 +49,36 @@ class AccountControllerTest extends ControllerTest {
                        fieldWithPath("email").description("이메일")
                    )
                ));
+    }
+
+    @DisplayName("회원 로그인 api")
+    @Test
+    void memberLoginTest() throws Exception {
+
+        LoginRequest loginRequest = new LoginRequest("loginId", "loginPassword");
+        TokenResponse tokenResponse = new TokenResponse("accessToken", "refreshToken");
+
+        when(accountService.login(any())).thenReturn(tokenResponse);
+
+        mockMvc.perform(
+            post(baseUrl + "/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(loginRequest)))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document(
+                "account/login",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestFields(
+                    fieldWithPath("loginId").description("로그인 아이디"),
+                    fieldWithPath("loginPassword").description("로그인 패스워드")
+                ),
+                responseFields(
+                    fieldWithPath("accessToken").description("Access Token"),
+                    fieldWithPath("refreshToken").description("Refresh Token")
+                )
+            ));
     }
 
 }
