@@ -8,6 +8,7 @@ import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.account.dto.response.TokenResponse;
 import com.springle.account.exception.AccountException;
 import com.springle.member.entity.Member;
+import com.springle.member.exception.MemberException;
 import com.springle.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,6 +91,19 @@ class AccountServiceTest extends ServiceTest {
             assertThat(token.refreshToken()).isNotNull();
         });
 
+    }
+
+    @Transactional
+    @DisplayName("없는 아이디로 로그인시 AccountException 반환한다")
+    @Test
+    void throwAccountExceptionWhenLoginWithNonExistentId() throws Exception {
+
+        //given
+        LoginRequest loginRequest = new LoginRequest("nonExists", "1234");
+
+        //when
+        //then, findByLoginId로 entity를 찾지 못하는 것은 일반적으로도 사용되므로 MemberException을 던지는데, 로그인 용 메소드를 만들어서 AccountException을 던지게 해야 하나?
+        assertThrows(MemberException.class, () -> accountService.login(loginRequest));
     }
 
 }
