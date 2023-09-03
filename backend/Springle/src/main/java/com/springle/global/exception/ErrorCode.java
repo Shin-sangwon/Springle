@@ -11,6 +11,7 @@ public enum ErrorCode {
     //Account
     DUPLICATED_LOGIN_ID(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다"),
+    INVALIDATED_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀립니다"),
     //Member
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다");
 

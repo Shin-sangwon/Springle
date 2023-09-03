@@ -32,8 +32,13 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member findById(long id) {
         return memberRepository.findById(id)
-                               .orElseThrow(() -> new MemberException(
-                                   ErrorCode.MEMBER_NOT_FOUND));
+                               .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Member findByLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                               .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validateDuplicateLoginIdAndEmail(RegistrationRequest request) {
@@ -44,7 +49,7 @@ public class MemberService {
     private void checkDuplicateLoginId(String loginId) {
         boolean loginIdExists = memberQueryRepository.existsByLoginId(loginId);
 
-        if(loginIdExists) {
+        if (loginIdExists) {
             throw new MemberException(ErrorCode.DUPLICATED_LOGIN_ID);
         }
     }
@@ -52,7 +57,7 @@ public class MemberService {
     private void checkDuplicateEmail(String email) {
         boolean emailExists = memberQueryRepository.existsByEmail(email);
 
-        if(emailExists) {
+        if (emailExists) {
             throw new MemberException(ErrorCode.DUPLICATED_EMAIL);
         }
     }
