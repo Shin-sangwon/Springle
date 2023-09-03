@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.springle.account.dto.request.LoginRequest;
 import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.account.dto.response.TokenResponse;
+import com.springle.account.exception.AccountException;
 import com.springle.member.entity.Member;
-import com.springle.member.exception.MemberException;
 import com.springle.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ class AccountServiceTest extends ServiceTest {
         //when
         long id = accountService.join(request);
 
-        assertThrows(MemberException.class, () -> accountService.join(request));
+        assertThrows(AccountException.class, () -> accountService.join(request));
     }
 
     @Transactional

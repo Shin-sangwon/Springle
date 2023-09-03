@@ -1,6 +1,7 @@
 package com.springle.member.service;
 
 import com.springle.account.dto.request.RegistrationRequest;
+import com.springle.account.exception.AccountException;
 import com.springle.global.exception.ErrorCode;
 import com.springle.member.entity.Member;
 import com.springle.member.exception.MemberException;
@@ -50,7 +51,7 @@ public class MemberService {
         boolean loginIdExists = memberQueryRepository.existsByLoginId(loginId);
 
         if (loginIdExists) {
-            throw new MemberException(ErrorCode.DUPLICATED_LOGIN_ID);
+            throw new AccountException(ErrorCode.DUPLICATED_LOGIN_ID);
         }
     }
 
@@ -58,7 +59,7 @@ public class MemberService {
         boolean emailExists = memberQueryRepository.existsByEmail(email);
 
         if (emailExists) {
-            throw new MemberException(ErrorCode.DUPLICATED_EMAIL);
+            throw new AccountException(ErrorCode.DUPLICATED_EMAIL);
         }
     }
 

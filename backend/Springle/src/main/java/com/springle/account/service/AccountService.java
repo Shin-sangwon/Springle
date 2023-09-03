@@ -3,9 +3,9 @@ package com.springle.account.service;
 import com.springle.account.dto.request.LoginRequest;
 import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.account.dto.response.TokenResponse;
+import com.springle.account.exception.AccountException;
 import com.springle.global.exception.ErrorCode;
 import com.springle.member.entity.Member;
-import com.springle.member.exception.MemberException;
 import com.springle.member.service.MemberService;
 import com.springle.security.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class AccountService {
 
     private void validatePasswordCheck(String memberPassword, String requestPassword) {
         if(!passwordEncoder.matches(requestPassword, memberPassword)) {
-            throw new MemberException(ErrorCode.INVALIDATED_PASSWORD);
+            throw new AccountException(ErrorCode.INVALIDATED_PASSWORD);
         }
     }
 }
