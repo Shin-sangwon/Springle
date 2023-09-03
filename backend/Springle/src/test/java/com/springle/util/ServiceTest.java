@@ -1,7 +1,6 @@
 package com.springle.util;
 
-import com.springle.member.entity.Member;
-import com.springle.member.entity.Role;
+import com.springle.account.dto.request.RegistrationRequest;
 import com.springle.member.repository.MemberRepository;
 import com.springle.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +18,9 @@ public abstract class ServiceTest {
 
     protected long createMember() {
 
-        Member member = Member.builder()
-                              .loginId("testId")
-                              .email("testEmail")
-                              .loginPassword("testPassword")
-                              .role(Role.USER)
-                              .name("testName")
-                              .build();
+        RegistrationRequest request = new RegistrationRequest("testId", "testPassword", "testName", "testEmail@email.com");
 
-        return memberRepository.save(member).getId();
+        return memberService.save(request);
     }
 
 }

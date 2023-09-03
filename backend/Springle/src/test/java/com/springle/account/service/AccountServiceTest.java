@@ -83,7 +83,7 @@ class AccountServiceTest extends ServiceTest {
         LoginRequest loginRequest = new LoginRequest("testId", "testPassword");
         //when
         TokenResponse tokenResponse = accountService.login(loginRequest);
-
+        System.out.println(tokenResponse.toString());
         //then
         assertThat(tokenResponse).satisfies(token -> {
             assertThat(token.accessToken()).isNotNull();

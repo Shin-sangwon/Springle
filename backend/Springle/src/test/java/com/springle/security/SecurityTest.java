@@ -47,7 +47,7 @@ public class SecurityTest extends AbstractContainerTest {
 
         Member member = createUser();
 
-        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole(), secretKey);
+        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole());
 
         assertThat(token).satisfies(t -> {
             assertThat(t).isNotNull();
@@ -62,7 +62,7 @@ public class SecurityTest extends AbstractContainerTest {
 
         Member member = createUser();
 
-        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole(), secretKey);
+        String token = jwtProvider.createToken(member.getId(), member.getLoginId(), member.getRole());
 
         long id = jwtProvider.getId(token, secretKey);
         String loginId = jwtProvider.getLoginId(token, secretKey);
@@ -92,7 +92,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void refreshTokenGenerated() throws Exception {
 
-        String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
+        String refreshToken = jwtProvider.createRefreshToken("loginId");
 
         assertThat(refreshToken).satisfies(t -> {
             assertThat(t).isNotNull();
@@ -106,7 +106,7 @@ public class SecurityTest extends AbstractContainerTest {
     void refreshTokenIsStoredInRedis() throws Exception {
 
 
-        jwtProvider.createRefreshToken("loginId", secretKey);
+        jwtProvider.createRefreshToken("loginId");
         System.out.println(redisTemplate.opsForValue().get("loginId"));
         boolean tokenExists = Boolean.TRUE.equals(redisTemplate.hasKey("loginId"));
 
@@ -119,7 +119,7 @@ public class SecurityTest extends AbstractContainerTest {
     @Test
     void tokenIsRefreshed() throws Exception {
 
-        String refreshToken = jwtProvider.createRefreshToken("loginId", secretKey);
+        String refreshToken = jwtProvider.createRefreshToken("loginId");
         String accessToken = jwtProvider.refreshAccessToken(refreshToken, secretKey);
 
         assertThat(accessToken).isNotNull();

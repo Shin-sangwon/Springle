@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider {
 
+    @Value("${jwt.token.secret}")
+    private String secretKey;
     private final RedisTemplate<String, String> redisTemplate;
     private final long accessTokenExpireTimeMs = 3600000L; // 1시간
     private final long refreshTokenExpireTimeMs = 1209600000L; // 2주일
@@ -58,7 +61,7 @@ public class JwtProvider {
         }
     }
 
-    public String createToken(Long id, String loginId, Role role, String secretKey) {
+    public String createToken(Long id, String loginId, Role role) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
         claims.put("loginId", loginId);
@@ -78,7 +81,7 @@ public class JwtProvider {
 
     }
 
-    public String createRefreshToken(String loginId, String secretKey) {
+    public String createRefreshToken(String loginId) {
 
         Claims claims = Jwts.claims();
         claims.put("loginId", loginId);
