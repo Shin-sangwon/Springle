@@ -3,7 +3,9 @@ package com.springle.account.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.springle.account.dto.request.LoginRequest;
 import com.springle.account.dto.request.RegistrationRequest;
+import com.springle.account.dto.response.TokenResponse;
 import com.springle.member.entity.Member;
 import com.springle.member.exception.MemberException;
 import com.springle.util.ServiceTest;
@@ -83,12 +85,11 @@ class AccountServiceTest extends ServiceTest {
         TokenResponse tokenResponse = accountService.login(loginRequest);
 
         //then
-        assertThat(tokenResponse).satisfied(token -> {
-            assertThat(token.accessToken).isNotNull();
-            assertThat(token.refreshToken).isNotNull();
+        assertThat(tokenResponse).satisfies(token -> {
+            assertThat(token.accessToken()).isNotNull();
+            assertThat(token.refreshToken()).isNotNull();
         });
 
     }
-
 
 }
