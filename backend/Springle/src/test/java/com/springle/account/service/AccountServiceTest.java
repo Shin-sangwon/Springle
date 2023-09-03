@@ -71,4 +71,24 @@ class AccountServiceTest extends ServiceTest {
         assertThrows(MemberException.class, () -> accountService.join(request));
     }
 
+    @Transactional
+    @DisplayName("회원 로그인 성공한다")
+    @Test
+    void successMemberLogin() throws Exception {
+
+        //given
+        long id = createMember();
+        LoginRequest loginRequest = new LoginRequest("testId", "testPassword");
+        //when
+        TokenResponse tokenResponse = accountService.login(loginRequest);
+
+        //then
+        assertThat(tokenResponse).satisfied(token -> {
+            assertThat(token.accessToken).isNotNull();
+            assertThat(token.refreshToken).isNotNull();
+        });
+
+    }
+
+
 }
